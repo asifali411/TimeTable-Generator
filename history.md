@@ -2,8 +2,6 @@
 
 - added public + src > styles
 - added index.js + index.html
-
-## [0.1.3]
-
+- added icons (11 Nos)
 - added fonts (16 Nos)
 - added colors.json + icons.json
