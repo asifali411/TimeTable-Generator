@@ -5,3 +5,5 @@
 - added icons (11 Nos)
 - added fonts (16 Nos)
 - added colors.json + icons.json
+- added svg icons (10 Nos)
+- added event.js + login.html
