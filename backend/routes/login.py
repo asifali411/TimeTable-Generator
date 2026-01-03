@@ -3,7 +3,7 @@ from typing import Annotated
 from database import SessionDep, get_user_by_username
 from fastapi.security import OAuth2PasswordRequestForm
 from oauth2 import authenticate_user, create_access_token, get_password_hash
-from models import Token, UserCreate, Users, UsersBase
+from models import Token, UserCreate, User, UsersBase
 
 #creating a login route
 routes = APIRouter(tags=['login'])
@@ -37,7 +37,7 @@ def register_user(db : SessionDep, user: UserCreate):
     
     #creating a new user
     hashed_password = get_password_hash(password=user.password)
-    new_user = Users(username=user.username, hashed_password=hashed_password)
+    new_user = User(username=user.username, hashed_password=hashed_password)
 
     #adding user to database
     db.add(new_user)

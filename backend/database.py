@@ -1,29 +1,42 @@
-from sqlmodel import SQLModel, create_engine, Session, select
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 from fastapi import Depends
 from typing import Annotated
-from models import Users
+from models import User, Base
 from config import SQL_DATABASE_URL
 
-engine = create_engine(SQL_DATABASE_URL)
+if not SQL_DATABASE_URL:
+    raise RuntimeError("SQL_DATABASE_URL is not set. Please set it in the environment or in a .env file.")
 
-#create database at the start of the server
+engine = create_engine(SQL_DATABASE_URL, future=True)
+
+
+# create database at the start of the server
 def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+    Base.metadata.create_all(bind=engine)
 
-#to create and return a session
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+# to create and return a session
 def get_session():
-    with Session(engine) as session:
-        yield session
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-#database dependancy
+
+# database dependency type usable in route signatures
 SessionDep = Annotated[Session, Depends(get_session)]
 
-#search user by id
-def get_user_by_id( user_id : int, db : Session):
-    cur_user = db.exec(select(Users).where(Users.id == user_id)).first()
-    return cur_user
 
-#search user by username
-def get_user_by_username(username : str, db : Session):
-    cur_user = db.exec(select(Users).where(Users.username == username)).first()
-    return cur_user
+# helper: search user by id
+def get_user_by_id(db: Session, user_id: int):
+    return db.query(User).filter(User.id == user_id).first()
+
+
+# helper: search user by username
+def get_user_by_username(db: Session, username: str):
+    return db.query(User).filter(User.username == username).first()

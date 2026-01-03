@@ -1,5 +1,10 @@
-import jwt
-from jwt.exceptions import InvalidTokenError
+try:
+    import jwt
+    from jwt.exceptions import InvalidTokenError
+except Exception as e:
+    raise RuntimeError(
+        "PyJWT is required but not installed. Run `pip install pyjwt` in your environment."
+    ) from e
 from datetime import datetime,timedelta, timezone
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from pwdlib import PasswordHash
